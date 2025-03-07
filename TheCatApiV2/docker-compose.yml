@@ -1,0 +1,37 @@
+networks:
+  the-cat-net-network: {}
+
+volumes:
+  database-store:
+  
+services:
+  server-mssql:
+    image: raptoor44/mmsqlserverthecatnet
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=6%tUK6jtl!nY2vQnSrTUhVAYVHS5zxj@Vud8^#3A3UXCodFZ!tOgIjnse9hsaGIuEs7vsrewK7^mXb&OZwIUM0EPLcnJSJw*IAl
+    networks:
+      - the-cat-net-network
+    # healthcheck:
+    #   test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "http://localhost:1433", "-U", "sa", "-P", "6%tUK6jtl!nY2vQnSrTUhVAYVHS5zxj@Vud8^#3A3UXCodFZ!tOgIjnse9hsaGIuEs7vsrewK7^mXb&OZwIUM0EPLcnJSJw*IAl", "-Q", "SELECT 1", "||", "exit 1"]
+    #   timeout: 3s
+    #   retries: 10
+
+  server-asp:
+    image: raptoor44/thecatnetjoachim
+    environment:
+        - DB_SERVER=server-mssql
+        - DB_NAME=TheCatNet
+        - DB_USER=sa
+        - DB_PASSWORD=6%tUK6jtl!nY2vQnSrTUhVAYVHS5zxj@Vud8^#3A3UXCodFZ!tOgIjnse9hsaGIuEs7vsrewK7^mXb&OZwIUM0EPLcnJSJw*IAl
+    networks:
+        - the-cat-net-network
+    ports:
+        - "20000:7777"
+    depends_on:
+      - server-mssql
+  
+
+secrets:
+  password:
+    file: secret.txt
